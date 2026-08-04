@@ -12,9 +12,11 @@ urlpatterns = [
     path('products/<slug:slug>/review/', views.add_review, name='add_review'),
     
     
-    path("auth/register/", register, name="register"),
-    path("auth/login/", login, name="login"),
-    path("auth/profile/", profile, name="profile"),
-    path("auth/logout/", logout, name="logout"),
-    path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/auth/register/", register, name="register"),
+    path("api/auth/login/", login, name="login"),
+    path("api/auth/profile/", profile, name="profile"),
+    path("api/auth/logout/", logout, name="logout"),
+    path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("auth/register/", views.register_user, name="register_user_fallback"), 
+    path("auth/login/", login, name="login_fallback"),
 ]
