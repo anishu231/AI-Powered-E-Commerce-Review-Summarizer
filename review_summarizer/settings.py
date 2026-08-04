@@ -40,6 +40,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+APPEND_SLASH = False
 
 ROOT_URLCONF = 'review_summarizer.urls'
 
@@ -102,8 +103,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # Frontend headers permission cross-origin safe bypass
-CORS_ALLOW_CREDENTIALS = True
 
 # =========================================================================
 # 🔥 AUTOMATED SMTP EMAIL MODULE SETTINGS
@@ -130,3 +129,7 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# settings.py ke sabse niche ye blocks re-verify karein
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
