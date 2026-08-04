@@ -17,6 +17,5 @@ urlpatterns = [
     path("api/auth/profile/", profile, name="profile"),
     path("api/auth/logout/", logout, name="logout"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("auth/register/", views.register_user, name="register_user_fallback"), 
-    path("auth/login/", login, name="login_fallback"),
+    
 ]
