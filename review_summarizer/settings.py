@@ -28,7 +28,8 @@ SECRET_KEY = 'django-insecure-a@o*el+hq(nmyohi1wxjon2*om03ux!si5o7r^nzd9qd0eji1)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']  # '*' lagane se Render ka dynamic URL automatic allow ho jayega
+
 
 # Application definition
 INSTALLED_APPS = [
