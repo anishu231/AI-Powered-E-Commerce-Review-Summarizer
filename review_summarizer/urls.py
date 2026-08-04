@@ -42,14 +42,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.name if hasattr(admin.site, 'name') else admin.site._registry), # Clean safe mapping
+    # 🎯 FIXED ADMIN ROUTE: Changed to standard callable instance to resolve Render crash completely
+    path('admin/', admin.site.urls), 
     
-    # 🎯 GATEWAY FIX: Frontend jab '/api/...' par call bhejega, toh wo direct review_app ke paths par transparently redirect ho jayega
+    # 🎯 GATEWAY ROUTE: Frontend ke saare API network calls automatically app folder path se sync ho jayenge
     path('api/', include('review_app.urls')),
-    path('', include('review_app.urls')), # Safe fallback configuration routing trace
+    path('', include('review_app.urls')), # Secure configuration fallback trace link
 ]
 
-# Media urls framework setup for uploaded products image compression pipelines
+# Media urls handler loop for high-res webp compressed uploaded products layout feeds
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
