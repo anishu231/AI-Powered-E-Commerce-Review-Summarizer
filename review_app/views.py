@@ -1,5 +1,6 @@
 import io
 import time
+import cloudinary.uploader 
 import uuid  # <-- FIXED: Top par unique slug identifier import add kiya
 from datetime import timedelta
 from django.conf import settings
@@ -134,18 +135,85 @@ def product_detail(request, slug):
 # ========================================================
 
 
-@api_view(["GET", "POST"]) 
+# @api_view(["GET", "POST"]) 
+# @parser_classes([MultiPartParser, FormParser])
+# def products_api_wrapper(request):
+
+#     if request.method == "GET":
+#         products = Product.objects.all().order_by("-id")
+#         serializer = ListProductSerializer(products, many=True)
+#         return Response(serializer.data)
+
+    
+#     elif request.method == "POST":
+        
+#         if not request.user.is_authenticated:
+#             return Response({"error": "Authentication required to upload products."}, status=status.HTTP_401_UNAUTHORIZED)
+            
+#         try:
+#             name = request.data.get('name')
+#             description = request.data.get('description')
+#             price = request.data.get('price')
+#             image_file = request.FILES.get('image')
+
+#             if not all([name, description, price, image_file]):
+#                 return Response({"error": "All fields (name, description, price, image) are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+#             # Pillow image compression processing pipeline
+#             img = Image.open(image_file)
+#             output_stream = io.BytesIO()
+
+#             if img.mode in ("RGBA", "P"):
+#                 img = img.convert("RGB")
+
+#             img.save(output_stream, format='WEBP', quality=80)
+#             output_stream.seek(0)
+
+#             new_filename = f"product_{slugify(name)}_{int(time.time())}.webp"
+#             compressed_file = ContentFile(output_stream.read(), name=new_filename)
+
+#             # Safe unique slug formulation engine logic
+#             generated_slug = slugify(name)
+#             if not generated_slug:
+#                 generated_slug = f"prod-{int(time.time())}"
+                
+#             if Product.objects.filter(slug=generated_slug).exists():
+#                 generated_slug = f"{generated_slug}-{str(uuid.uuid4())[:4]}"
+
+#             product = Product.objects.create(
+#                 name=name,
+#                 description=description,
+#                 price=price,
+#                 image=compressed_file,
+#                 slug=generated_slug
+#             )
+
+#             return Response({
+#                 "message": "Product published and compressed successfully! 🎉",
+#                 "product": {
+#                     "id": product.id,
+#                     "name": product.name,
+#                     "price": str(product.price),
+#                     "imageUrl": product.image.url
+#                 }
+#             }, status=status.HTTP_201_CREATED)
+
+#         except Exception as e:
+#             print(f"❌ Product Upload Exception: {str(e)}")
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# review_app/views.py ke products_api_wrapper POST section ko is tarah update karein:
+ # File ke top par ye import check kar lena
+
+@api_view(["GET", "POST"])
 @parser_classes([MultiPartParser, FormParser])
 def products_api_wrapper(request):
-
     if request.method == "GET":
         products = Product.objects.all().order_by("-id")
         serializer = ListProductSerializer(products, many=True)
         return Response(serializer.data)
-
-    
-    elif request.method == "POST":
         
+    elif request.method == "POST":
         if not request.user.is_authenticated:
             return Response({"error": "Authentication required to upload products."}, status=status.HTTP_401_UNAUTHORIZED)
             
@@ -154,52 +222,52 @@ def products_api_wrapper(request):
             description = request.data.get('description')
             price = request.data.get('price')
             image_file = request.FILES.get('image')
-
+            
             if not all([name, description, price, image_file]):
                 return Response({"error": "All fields (name, description, price, image) are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Pillow image compression processing pipeline
-            img = Image.open(image_file)
-            output_stream = io.BytesIO()
-
-            if img.mode in ("RGBA", "P"):
-                img = img.convert("RGB")
-
-            img.save(output_stream, format='WEBP', quality=80)
-            output_stream.seek(0)
-
-            new_filename = f"product_{slugify(name)}_{int(time.time())}.webp"
-            compressed_file = ContentFile(output_stream.read(), name=new_filename)
-
+                
+            # 🎯 CLOUDINARY FILE UPLOAD STREAM PIPELINE
+            # User ki manual file seedhe high-speed secure cloud server par push ho jayegi
+            upload_result = cloudinary.uploader.upload(
+                image_file,
+                folder="reviewpulse_products",
+                format="webp", # Automatic production webp conversion optimization
+                transformation=[{"quality": "auto:good"}] # Auto-compression mode active
+            )
+            
+            # Secure permanent dynamic image secure URL link fetch loop
+            secure_cloud_url = upload_result.get("secure_url")
+            
             # Safe unique slug formulation engine logic
             generated_slug = slugify(name)
             if not generated_slug:
                 generated_slug = f"prod-{int(time.time())}"
-                
             if Product.objects.filter(slug=generated_slug).exists():
                 generated_slug = f"{generated_slug}-{str(uuid.uuid4())[:4]}"
-
+                
+            # Create live product tracking data row in cloud database
             product = Product.objects.create(
                 name=name,
                 description=description,
                 price=price,
-                image=compressed_file,
+                image=secure_cloud_url, # Direct permanent secure cloud link inserted
                 slug=generated_slug
             )
-
+            
             return Response({
-                "message": "Product published and compressed successfully! 🎉",
+                "message": "Product published and cloud-stored successfully! 🚀",
                 "product": {
                     "id": product.id,
                     "name": product.name,
                     "price": str(product.price),
-                    "imageUrl": product.image.url
+                    "imageUrl": secure_cloud_url
                 }
             }, status=status.HTTP_201_CREATED)
-
+            
         except Exception as e:
-            print(f"❌ Product Upload Exception: {str(e)}")
+            print(f"❌ Cloudinary Upload Exception Error: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 @api_view(["POST"])

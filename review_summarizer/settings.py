@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 import environ  # django-environ import kiya gaya
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
@@ -132,4 +135,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # settings.py ke sabse niche ye blocks re-verify karein
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+cloudinary.config(
+    cloud_name=env('CLOUDINARY_CLOUD_NAME', default=''),
+    api_key=env('CLOUDINARY_API_KEY', default=''),
+    api_secret=env('CLOUDINARY_API_SECRET', default='')
+)
 
