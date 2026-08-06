@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
@@ -142,3 +143,14 @@ cloudinary.config(
     api_secret=env('CLOUDINARY_API_SECRET', default='')
 )
 
+SIMPLE_JWT = {
+    # 🎯 PERMANENT SESSION CONFIGURATION:
+    # Access token aur Refresh token ka lifetime bohot lamba kar diya hai,
+    # taaki Render ke restart hone par bhi user logged-in rahe.
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),   # 1 saal tak active rahega
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=400),  # Refresh token ki life bhi badha di
+    'ROTATE_REFRESH_TOKENS': False,                 # Baar-baar token change nahi hoga
+    'BLACKLIST_AFTER_ROTATION': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,                      # Strict secret signature binding
+}
