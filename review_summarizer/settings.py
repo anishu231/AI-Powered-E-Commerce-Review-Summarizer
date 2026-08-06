@@ -2,6 +2,10 @@ import os
 from pathlib import Path
 import environ  # Standard cloud environment reader active
 import dj_database_url
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from datetime import timedelta 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -94,9 +98,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:3000",
 ]
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+
 
 # =========================================================================
 # 🎯 FIXED SMTP EMAIL MODULE SETTINGS: Restored accurate server paths
