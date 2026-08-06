@@ -71,7 +71,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=False if 'localhost' in os.environ.get('DATABASE_URL', '') or not os.environ.get('RENDER') else True
     )
 }
 
