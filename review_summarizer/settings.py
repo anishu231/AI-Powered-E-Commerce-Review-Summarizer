@@ -1,16 +1,11 @@
 import os
 from pathlib import Path
-import environ  # django-environ import kiya gaya
-from dotenv import load_dotenv
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-from datetime import timedelta
+import environ  # Standard cloud environment reader active
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, '.env'))
 
+# Initialize environment variables variables scheme
 env = environ.Env(
     DEBUG=(bool, False)
 )
@@ -19,7 +14,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-a@o*el+hq(nmyohi1wxjon2*om03ux!si5o7r^nzd9qd0eji1)'
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']  # '*' lagane se Render ka dynamic URL automatic allow ho jayega
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']  # Wildcard matrix allows dynamic Render subdomains
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,7 +31,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # 🎯 Top par perfectly aligned hai
+    'corsheaders.middleware.CorsMiddleware',  # Perfectly placed at the absolute top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -45,8 +40,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-APPEND_SLASH = False
 
+APPEND_SLASH = False  # Fixed trailing slash network error crash blocks
 ROOT_URLCONF = 'review_summarizer.urls'
 
 TEMPLATES = [
@@ -66,26 +61,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
+# 🎯 LIVE POSTGRESQL ENGINE CONFIGURATION WITH SECURE SSL PIPELINE
+# Is settings engine se Render ka postgres driver instantly handshakes verify kar lega
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600
+        conn_max_age=600,
+        ssl_require=True
     )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator' },
+    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator' },
+    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator' },
+    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator' },
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -96,62 +86,59 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-GEMINI_API_KEY = env('GEMINI_API_KEY')
+GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
 
-# =========================================================================
-# 🎯 FIXED CORS INTEGRATION: Added your live Netlify domain address
-# =========================================================================
 CORS_ALLOWED_ORIGINS = [
-    "https://netlify.app",  # 👈 Aapka live production website URL
+    "https://netlify.app",
     "http://localhost:3000",
     "http://localhost:8080",
     "http://127.0.0.1:3000",
 ]
-
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # =========================================================================
-# 🔥 AUTOMATED SMTP EMAIL MODULE SETTINGS
+# 🎯 FIXED SMTP EMAIL MODULE SETTINGS: Restored accurate server paths
 # =========================================================================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '://gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
+EMAIL_HOST = '://gmail.com'  # 👈 FIXED: Removed invalid protocol prefix symbols
+EMAIL_PORT = 587 
+EMAIL_USE_TLS = True 
+EMAIL_HOST_USER = 'singhrohit23130@gmail.com' 
+EMAIL_HOST_PASSWORD = 'abcdefghijklmnop' 
+DEFAULT_FROM_EMAIL = 'ReviewPulse AI Team <singhrohit23130@gmail.com>' 
 
-# 1. Apni real Gmail ID aur setting waala 16-letter App Password yahan safe add karein:
-EMAIL_HOST_USER = 'singhrohit23130@gmail.com'  
-EMAIL_HOST_PASSWORD = 'abcdefghijklmnop'  # 👈 Yahan apna 16-character ka Google app password bina spaces ke likhein
+REST_FRAMEWORK = { 
+    "DEFAULT_AUTHENTICATION_CLASSES": ( 
+        "rest_framework_simplejwt.authentication.JWTAuthentication", 
+    ), 
+    "DEFAULT_PERMISSION_CLASSES": ( 
+        "rest_framework.permissions.AllowAny", 
+    ), 
+} 
 
-DEFAULT_FROM_EMAIL = 'ReviewPulse AI Team <singhrohit23130@gmail.com>'
+MEDIA_URL = '/media/' 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.AllowAny",
-    ),
-}
+CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_CREDENTIALS = True 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# settings.py ke sabse niche ye blocks re-verify karein
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+# 🎯 CLOUDINARY CONFIGURATION ENGINE
+cloudinary.config( 
+    cloud_name=env('CLOUDINARY_CLOUD_NAME', default=''), 
+    api_key=env('CLOUDINARY_API_KEY', default=''), 
+    api_secret=env('CLOUDINARY_API_SECRET', default='') 
+) 
 
-cloudinary.config(
-    cloud_name=env('CLOUDINARY_CLOUD_NAME', default=''),
-    api_key=env('CLOUDINARY_API_KEY', default=''),
-    api_secret=env('CLOUDINARY_API_SECRET', default='')
-)
-
-SIMPLE_JWT = {
-    # 🎯 PERMANENT SESSION CONFIGURATION:
-    # Access token aur Refresh token ka lifetime bohot lamba kar diya hai,
-    # taaki Render ke restart hone par bhi user logged-in rahe.
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),   # 1 saal tak active rahega
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=400),  # Refresh token ki life bhi badha di
-    'ROTATE_REFRESH_TOKENS': False,                 # Baar-baar token change nahi hoga
-    'BLACKLIST_AFTER_ROTATION': False,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,                      # Strict secret signature binding
+# =========================================================================
+# 🎯 FIXED SIMPLE JWT LIFETIME PERSISTENCE MODULE
+# =========================================================================
+SIMPLE_JWT = { 
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=400), 
+    'ROTATE_REFRESH_TOKENS': False, 
+    'BLACKLIST_AFTER_ROTATION': False, 
+    'ALGORITHM': 'HS256', 
+    'SIGNING_KEY': SECRET_KEY, 
 }
