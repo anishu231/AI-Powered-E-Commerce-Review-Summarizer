@@ -64,17 +64,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
-
-# 🎯 LIVE POSTGRESQL ENGINE CONFIGURATION WITH SECURE SSL PIPELINE
-# Is settings engine se Render ka postgres driver instantly handshakes verify kar lega
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=False if 'localhost' in os.environ.get('DATABASE_URL', '') or not os.environ.get('RENDER') else True
-    )
-}
-
+if os.environ.get('RENDER'):
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get('DATABASE_URL')),
+    }
+    # Secure SSL handshake rules enforce kiye hain Render cloud database ke liye
+    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+else:
+    # Local machine par normal binary SQLite chalta rahega testing ke liye
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator' },
     { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator' },
