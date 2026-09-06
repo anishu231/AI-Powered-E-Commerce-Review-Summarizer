@@ -215,12 +215,12 @@ WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 # 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
 # =========================================================================
 if os.environ.get('RENDER'):
-    # 💡 FIX: Connected to the Transaction Pooler (IPv4) with exact database name matching
+    # 💡 FIX: Exact pooler user and tenant id mapping applied
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',                     # Supabase ka connection pooler default name
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # Aapka exact pooler tenant identity
+            'NAME': 'postgres',
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # 🎯 Sahi dynamic pooler identifier lock kar diya hai
             'PASSWORD': 'Student@#1234Rahul',  # 👈 YAHAN APNA REAL DATABASE PASSWORD LIKHEIN (Bina brackets ke)
             'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
             'PORT': 6543,
