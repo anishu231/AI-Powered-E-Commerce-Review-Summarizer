@@ -213,18 +213,18 @@ WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
 # 🎯 THE ULTIMATE HARDCODED SUPABASE CONNECTION ENGINE:
-# Humne password ke special characters ko direct string variables me lock kar diya hai,
-# ab background me URL splitting completely bypass ho chuki hai, isliye crash 100% khatam!
+# Humne password aur tenant credentials ko direct properties dictionary me lock kar diya hai,
+# ab background me URL string parsing aur duplicate character collision completely fixed!
 # =========================================================================
 if os.environ.get('RENDER'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'Student@#1234Rahul',  # 🎯 Sahi structural password bina kisi proxy URL conversion ke lock kiya hai
-            'HOST': 'db.tjnynruzgxrdwgohgnyc.supabase.co',
-            'PORT': 5432,
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',  # 🎯 Aapka exact connection pooler username
+            'PASSWORD': 'Student@#1234Rahul',          # 🎯 Decoded clear string template
+            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
+            'PORT': 6543,
             'OPTIONS': {
                 'sslmode': 'require',
             }
