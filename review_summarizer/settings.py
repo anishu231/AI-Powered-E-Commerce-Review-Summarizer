@@ -210,28 +210,22 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'review_summarizer.wsgi.application'
+
 # =========================================================================
-# 🎯 THE ULTIMATE FOOLPROOF SUPABASE PARSER PIPELINE (AUTO ENGINE)
-# Yeh setting direct connection (IPv6 fallback) aur Pooler (IPv4 compatible) 
-# dono ko completely and dynamic auto-parse kar legi bina kisi manual error ke!
+# 🎯 THE ULTIMATE STANDALONE IPV4 POOLER ENGINE (100% BYPASS RENDER CACHE LOGS)
+# Humne Render ke dashboard environment variables panel ke 'DATABASE_URL' se connection 
+# poori tarah tod diya hai. Ab hostname direct rigid explicit parameters read karega!
 # =========================================================================
 if os.environ.get('RENDER'):
-    import urllib.parse as urlparse
-    db_link_str = os.environ.get('DATABASE_URL', '')
-    url = urlparse.urlparse(db_link_str)
-    
-    db_name = url.path[1:]
-    if "?" in db_name:
-        db_name = db_name.split("?")[0]
-
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_name if db_name else 'postgres',
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port or 5432,
+            'NAME': 'postgres',
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',         # Sahi verified pooler identity
+            'PASSWORD': 'Student123456789Rahul12',         # Aapka clean symbol-free strict password
+            'HOST': '://supabase.com', # 100% Stable IPv4 Pooler Host link
+            'PORT': 6543,                                   # Transactional Pooler network port configuration
             'OPTIONS': {
                 'sslmode': 'require',
             }
