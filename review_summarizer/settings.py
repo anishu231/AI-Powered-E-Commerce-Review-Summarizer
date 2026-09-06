@@ -262,17 +262,17 @@ GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
 
 # 🎯 FIXED CORS METRICS LINK FORMAT
 CORS_ALLOWED_ORIGINS = [
-    "https://ai-review-summarizer.netlify.app",  # 👈 Added your custom domain link
+    "https://netlify.app",
     "http://localhost:3000",
     "http://localhost:8080",
     "http://127.0.0.1:3000",
 ]
 
 # =========================================================================
-# 🎯 FIXED SMTP EMAIL MODULE SETTINGS: Restored accurate server paths
+# 🎯 FIXED SMTP EMAIL MODULE SETTINGS
 # =========================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
-EMAIL_HOST = 'smtp.gmail.com'  # 👈 FIXED: Resolved invalid syntax block
+EMAIL_HOST = '://gmail.com' 
 EMAIL_PORT = 587 
 EMAIL_USE_TLS = True 
 EMAIL_HOST_USER = 'singhrohit23130@gmail.com' 
