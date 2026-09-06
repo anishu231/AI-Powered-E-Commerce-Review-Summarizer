@@ -211,24 +211,62 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
+# 🎯 FIXED HARDCODED PARSING PIPELINE FOR SUPABASE POOLER (IPv4 COMPATIBLE)
 # =========================================================================
 if os.environ.get('RENDER'):
-    # 💡 FIX: Hamein direct key extraction architecture se explicit keys define kr di hain,
-    # ab regex ya text configuration split lines par dependencies completely zero ho chuki hai!
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'Student@#1234Rahul',  # 👈 YAHAN APNA REAL DATABASE PASSWORD LIKHEIN (Bina brackets ke)
-            'HOST': 'db.tjnynruzgxrdwgohgnyc.supabase.co',
-            'PORT': 5432,
-            'OPTIONS': {
-                'sslmode': 'require',
+    raw_db_link = os.environ.get('DATABASE_URL', '')
+    
+    # Clean connection configuration parameters mapping
+    try:
+        clean_link = raw_db_link.replace("postgresql://", "")
+        auth_part, host_part = clean_link.split("@")
+        user, password = auth_part.split(":")
+        
+        # Split host and database segment parameters
+        if "/" in host_part:
+            host_and_port, db_name = host_part.split("/")
+        else:
+            host_and_port = host_part
+            db_name = "postgres"
+            
+        # Clean extra parameters flag links if exists
+        if "?" in db_name:
+            db_name = db_name.split("?")[0]
+            
+        if ":" in host_and_port:
+            host, port = host_and_port.split(":")
+        else:
+            host = host_and_port
+            port = 6543  # Standard Supabase pooler connection port
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_name,
+                'USER': user,
+                'PASSWORD': password,
+                'HOST': host,
+                'PORT': int(port),
+                'OPTIONS': {
+                    'sslmode': 'require',
+                }
             }
         }
-    }
+    except Exception as parse_error:
+        # Fallback raw recovery layer parameters
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': 'postgres.tjnynruzgxrdwgohgnyc',
+                'PASSWORD': 'Sudent@#1234Rahul',  # 👈 Backup automatic parameter link
+                'HOST': '://supabase.com',
+                'PORT': 6543,
+                'OPTIONS': {
+                    'sslmode': 'require',
+                }
+            }
+        }
 else:
     # Local machine binary SQLite workspace setup
     DATABASES = {
