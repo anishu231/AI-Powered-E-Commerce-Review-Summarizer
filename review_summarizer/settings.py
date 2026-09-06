@@ -150,7 +150,6 @@
 import os
 from pathlib import Path
 from datetime import timedelta 
-import urllib.parse as urlparse  # 🎯 Standard python tool to handle strict passwords safely
 import environ  # Standard cloud environment reader active
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -212,27 +211,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE BYPASS PARSER: Safely unpacks complex password symbols automatically
+# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
 # =========================================================================
 if os.environ.get('RENDER'):
-    raw_url = os.environ.get('DATABASE_URL', '')
-    
-    # URL parsing handles encoding mapping automatically
-    url = urlparse.urlparse(raw_url)
-    
-    # Extracted parameters registration
-    db_name = url.path[1:]
-    if "?" in db_name:
-        db_name = db_name.split("?")[0]
-
+    # 💡 FIX: Hamein direct key extraction architecture se explicit keys define kr di hain,
+    # ab regex ya text configuration split lines par dependencies completely zero ho chuki hai!
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_name,
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port or 5432,
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': 'Student@#1234Rahul',  # 👈 YAHAN APNA REAL DATABASE PASSWORD LIKHEIN (Bina brackets ke)
+            'HOST': 'db.tjnynruzgxrdwgohgnyc.supabase.co',
+            'PORT': 5432,
             'OPTIONS': {
                 'sslmode': 'require',
             }
