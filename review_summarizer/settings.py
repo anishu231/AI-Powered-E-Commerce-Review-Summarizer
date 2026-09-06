@@ -209,20 +209,22 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'review_summarizer.wsgi.application'
+
 # =========================================================================
-# 🎯 THE ULTIMATE IPV4 COMPATIBLE SUPABASE CONNECTION ENGINE:
-# Direct IPv6 host ko hatakar pooler routing host apply kiya hai, 
-# isse Render bina kisi network unreachable error ke instantly handshake pass kar lega!
+# 🎯 THE ULTIMATE HARDCODED SUPABASE CONNECTION ENGINE:
+# Humne password aur tenant credentials ko direct properties dictionary me lock kar diya hai,
+# ab background me URL string parsing aur duplicate character collision completely fixed!
 # =========================================================================
 if os.environ.get('RENDER'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',                     # Standard Supabase database name
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # 🎯 POOLER MODE REQUIRES TENANT USERNAME PREFIX
-            'PASSWORD': 'Student@#1234Rahul',          # Aapka exact password
-            'HOST': '://supabase.com', # 🎯 FIXED: IPv4 Compatible Pooler Host
-            'PORT': 6543,                           # Pooler port selection rule
+            'NAME': 'postgres',
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',  # Aapka exact connection pooler username
+            'PASSWORD': 'Student@#1234Rahul',          # Decoded clear string template
+            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # Sahi IPv4 Pooler host link
+            'PORT': 6543,
             'OPTIONS': {
                 'sslmode': 'require',
             }
@@ -236,7 +238,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
 
 
 
