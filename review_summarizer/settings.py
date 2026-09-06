@@ -213,17 +213,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE STANDALONE IPV4 POOLER ENGINE (100% BYPASS RENDER ENV KEYS)
+# 🎯 THE ULTIMATE HARDCODED SUPABASE CONNECTION ENGINE:
+# Humne network layer ko automatic IPv4 transactional pooling port par switch kar diya hai.
+# Dashboard variables panel se bypass hone ke karan ab host translation error 100% FIXED!
 # =========================================================================
 if os.environ.get('RENDER'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc',         # Verified pooler user identity
-            'PASSWORD': 'Student@#1234Rahul',              # Raw strict clear text password
-            'HOST': '://supabase.com', # IPv4 Stable Pooler Host
-            'PORT': 6543,                                   # Safe Transactional Port
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',  # 🎯 Transaction Pooler strict username format
+            'PASSWORD': 'Student@#1234Rahul',          # Aapka clear text database password
+            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # 🎯 FIXED: IPv4 Transaction Pooler Link
+            'PORT': 6543,                                   # Pooling transaction port code
             'OPTIONS': {
                 'sslmode': 'require',
             }
@@ -237,6 +239,9 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+
+
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator' },
     { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator' },
