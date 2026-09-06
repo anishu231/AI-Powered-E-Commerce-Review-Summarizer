@@ -150,6 +150,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta 
+import urllib.parse as urlparse  # 🎯 Standard python tool to handle strict passwords safely
 import environ  # Standard cloud environment reader active
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -211,41 +212,32 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE BYPASS DATABASE CONFIG: Manual absolute connection mapping
+# 🎯 THE ULTIMATE BYPASS PARSER: Safely unpacks complex password symbols automatically
 # =========================================================================
 if os.environ.get('RENDER'):
-    # Hamein direct environment dictionary se fetch karna hai bina kisi layer ke
-    raw_db_link = os.environ.get('DATABASE_URL', '')
+    raw_url = os.environ.get('DATABASE_URL', '')
     
-    # URL string processing framework logic splits cleaner
-    # Format: postgresql://user:password@host:port/dbname
-    try:
-        clean_link = raw_db_link.replace("postgresql://", "")
-        auth_part, host_part = clean_link.split("@")
-        user, password = auth_part.split(":")
-        host_and_port, db_name = host_part.split("/")
-        host, port = host_and_port.split(":")
-        
-        # Query parameters cleanup block (if any pooler strings appended)
-        if "?" in db_name:
-            db_name = db_name.split("?")[0]
+    # URL parsing handles encoding mapping automatically
+    url = urlparse.urlparse(raw_url)
+    
+    # Extracted parameters registration
+    db_name = url.path[1:]
+    if "?" in db_name:
+        db_name = db_name.split("?")[0]
 
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': db_name,
-                'USER': user,
-                'PASSWORD': password,
-                'HOST': host,
-                'PORT': int(port),
-                'OPTIONS': {
-                    'sslmode': 'require',
-                }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_name,
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port or 5432,
+            'OPTIONS': {
+                'sslmode': 'require',
             }
         }
-    except Exception as parse_error:
-        # Fallback database definition configuration token allocation loop
-        raise Exception(f"DATABASE_URL string parsing collapsed. Please ensure correct token structure values inside Render panel: {str(parse_error)}")
+    }
 else:
     # Local machine binary SQLite workspace setup
     DATABASES = {
