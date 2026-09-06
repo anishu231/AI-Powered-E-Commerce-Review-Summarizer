@@ -214,16 +214,18 @@ WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
 # 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
+# Humne background configuration parser variable URL standard dependencies completely 0% kardi hain,
+# ab error code parameter direct explicit properties read karega bina kisi crash risk ke!
 # =========================================================================
 if os.environ.get('RENDER'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # Exact Supabase Connection Pooler user
-            'PASSWORD': 'Student@#1234Rahul',          # Raw decoded clear text password
-            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # IPv4 Stable Pooler Host
-            'PORT': 6543,                           # Safe Transactional Port
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # Aapka explicit correct tenant project user code
+            'PASSWORD': 'Student@#1234Rahul',          # Aapka decoded clear text password block
+            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # IPv4 Stable Transaction Pooler Host link
+            'PORT': 6543,                           # Transactional Pooler network port configuration
             'OPTIONS': {
                 'sslmode': 'require',
             }
