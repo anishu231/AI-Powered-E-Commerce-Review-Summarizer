@@ -213,68 +213,34 @@ WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 # =========================================================================
 # 🎯 FIXED HARDCODED PARSING PIPELINE FOR SUPABASE POOLER (IPv4 COMPATIBLE)
 # =========================================================================
-if os.environ.get('RENDER'):
-    raw_db_link = os.environ.get('DATABASE_URL', '')
-    
-    # Clean connection configuration parameters mapping
-    try:
-        clean_link = raw_db_link.replace("postgresql://", "")
-        auth_part, host_part = clean_link.split("@")
-        user, password = auth_part.split(":")
-        
-        # Split host and database segment parameters
-        if "/" in host_part:
-            host_and_port, db_name = host_part.split("/")
-        else:
-            host_and_port = host_part
-            db_name = "postgres"
-            
-        # Clean extra parameters flag links if exists
-        if "?" in db_name:
-            db_name = db_name.split("?")[0]
-            
-        if ":" in host_and_port:
-            host, port = host_and_port.split(":")
-        else:
-            host = host_and_port
-            port = 6543  # Standard Supabase pooler connection port
+# settings.py ke DATABASES section ko is complete clean structure se replace karein:
 
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': db_name,
-                'USER': user,
-                'PASSWORD': password,
-                'HOST': host,
-                'PORT': int(port),
-                'OPTIONS': {
-                    'sslmode': 'require',
-                }
+# 🎯 EXPLICIT SECURE SUPABASE CONNECTION ENGINE:
+# Pooler database string parameter parsing dependencies completely hatakar direct routing apply ki hai,
+# isse password me '@' ya structure format badalne par bhi database kabhi crash nahi hoga!
+if os.environ.get('RENDER'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',
+            'PASSWORD': 'Student@#1234Rahul',  # 👈 YAHAN APNA REAL DATABASE PASSWORD LIKHEIN (Bina brackets ke)
+            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
+            'PORT': 6543,
+            'OPTIONS': {
+                'sslmode': 'require',
             }
         }
-    except Exception as parse_error:
-        # Fallback raw recovery layer parameters
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'postgres',
-                'USER': 'postgres.tjnynruzgxrdwgohgnyc',
-                'PASSWORD': 'Sudent@#1234Rahul',  # 👈 Backup automatic parameter link
-                'HOST': '://supabase.com',
-                'PORT': 6543,
-                'OPTIONS': {
-                    'sslmode': 'require',
-                }
-            }
-        }
+    }
 else:
-    # Local machine binary SQLite workspace setup
+    # Local windows configuration testing environment template
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator' },
