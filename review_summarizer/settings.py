@@ -212,18 +212,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
+# 🎯 THE ULTIMATE STANDALONE DIRECT DB ENGINE (100% BYPASS POOLER)
+# Pooler database parameters ko poori tarah mita kar direct connection mode lagaya hai,
+# ab USER me sirf 'postgres' jayega, isse 'tenant/user not found' ka error jadd se saaf!
 # =========================================================================
 if os.environ.get('RENDER'):
-    # 💡 ACCURATE FIX: Applied your precise authentic active Supabase project credentials format
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # 🎯 Sahi pooler identifier (tjnynruzgxrdwgohgnyc) lock kar diya hai
-            'PASSWORD': 'Student@#1234Rahul',          # 🎯 Aapka exact decoded clear text password
-            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
-            'PORT': 6543,
+            'USER': 'postgres',                         # 🎯 Direct standard database user
+            'PASSWORD': 'Student@#1234Rahul',              # Aapka clear string password
+            'HOST': 'db.tjnynruzgxrdwgohgnyc.supabase.co', # 🎯 Sahi dynamic direct project host address
+            'PORT': 5432,                               # Pure PostgreSQL standalone session port
             'OPTIONS': {
                 'sslmode': 'require',
             }
