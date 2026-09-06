@@ -152,10 +152,6 @@ import os
 from pathlib import Path
 from datetime import timedelta 
 import environ  # Standard cloud environment reader active
-import dj_database_url
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -216,7 +212,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 FIXED SUPABASE CLOUD POSTGRESQL PARSING ENGINE
+# 🎯 FIXED HARDCODED PARSING: Completely decoupled dj_database_url module
 # =========================================================================
 if os.environ.get('RENDER'):
     import urllib.parse as urlparse
@@ -293,6 +289,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOW_ALL_ORIGINS = True 
 CORS_ALLOW_CREDENTIALS = True 
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # 🎯 CLOUDINARY CONFIGURATION ENGINE
 cloudinary.config( 
