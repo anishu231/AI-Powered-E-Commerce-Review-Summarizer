@@ -147,6 +147,7 @@
 #     'ALGORITHM': 'HS256', 
 #     'SIGNING_KEY': SECRET_KEY, 
 # }
+
 import os
 from pathlib import Path
 from datetime import timedelta 
@@ -211,19 +212,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 FIXED HARDCODED PARSING PIPELINE FOR SUPABASE POOLER (IPv4 COMPATIBLE)
+# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
 # =========================================================================
-# settings.py ke DATABASES section ko is complete clean structure se replace karein:
-
-# 🎯 EXPLICIT SECURE SUPABASE CONNECTION ENGINE:
-# Pooler database string parameter parsing dependencies completely hatakar direct routing apply ki hai,
-# isse password me '@' ya structure format badalne par bhi database kabhi crash nahi hoga!
 if os.environ.get('RENDER'):
+    # 💡 FIX: Connected to the Transaction Pooler (IPv4) with exact database name matching
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc',
+            'NAME': 'postgres',                     # Supabase ka connection pooler default name
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # Aapka exact pooler tenant identity
             'PASSWORD': 'Student@#1234Rahul',  # 👈 YAHAN APNA REAL DATABASE PASSWORD LIKHEIN (Bina brackets ke)
             'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
             'PORT': 6543,
@@ -233,13 +230,14 @@ if os.environ.get('RENDER'):
         }
     }
 else:
-    # Local windows configuration testing environment template
+    # Local machine binary SQLite workspace setup
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
