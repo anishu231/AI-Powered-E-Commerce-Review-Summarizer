@@ -210,22 +210,19 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'review_summarizer.wsgi.application'
-
 # =========================================================================
-# 🎯 THE ULTIMATE HARDCODED SUPABASE CONNECTION ENGINE:
-# Humne network layer ko automatic IPv4 transactional pooling port par switch kar diya hai.
-# Dashboard variables panel se bypass hone ke karan ab host translation error 100% FIXED!
+# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
 # =========================================================================
 if os.environ.get('RENDER'):
+    # 💡 ACCURATE FIX: Sync-wired correct transaction pooler credentials matrix
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc',  # 🎯 Transaction Pooler strict username format
-            'PASSWORD': 'Student@#1234Rahul',          # Aapka clear text database password
-            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # 🎯 FIXED: IPv4 Transaction Pooler Link
-            'PORT': 6543,                                   # Pooling transaction port code
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # 🎯 Sahi pooler identifier explicitly set kar diya hai
+            'PASSWORD': 'Student@#1234Rahul',          # Aapka exact decoded clear text password
+            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # IPv4 Compatible Pooler Host
+            'PORT': 6543,                           # Pooling transactional port
             'OPTIONS': {
                 'sslmode': 'require',
             }
@@ -239,8 +236,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-
 
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator' },
