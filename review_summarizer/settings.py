@@ -213,19 +213,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
-# Humne background configuration parser variable URL standard dependencies completely 0% kardi hain,
-# ab error code parameter direct explicit properties read karega bina kisi crash risk ke!
+# 🎯 THE ULTIMATE STANDALONE DIRECT DB ENGINE (100% BYPASS POOLER DICTIONARIES)
+# User structure parameter me dot standard format hatakar standalone connect kiya hai.
+# Password attributes complex encoding checks se fully decoupled locked ho chuke hain!
 # =========================================================================
 if os.environ.get('RENDER'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc', # Aapka explicit correct tenant project user code
-            'PASSWORD': 'Student@#1234Rahul',          # Aapka decoded clear text password block
-            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # IPv4 Stable Transaction Pooler Host link
-            'PORT': 6543,                           # Transactional Pooler network port configuration
+            'USER': 'postgres',                         # Direct standard standalone user layout
+            'PASSWORD': 'Student@#1234Rahul',              # Aapka explicit decoded password string
+            'HOST': 'db.tjnynruzgxrdwgohgnyc.supabase.co', # Aapka exact original standalone host address
+            'PORT': 5432,                               # Pure PostgreSQL traditional session port
             'OPTIONS': {
                 'sslmode': 'require',
             }
