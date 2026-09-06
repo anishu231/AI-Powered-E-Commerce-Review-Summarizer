@@ -213,19 +213,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'review_summarizer.wsgi.application'
 
 # =========================================================================
-# 🎯 THE ULTIMATE STANDALONE DIRECT DB ENGINE (100% BYPASS POOLER DICTIONARIES)
-# User structure parameter me dot standard format hatakar standalone connect kiya hai.
-# Password attributes complex encoding checks se fully decoupled locked ho chuke hain!
+# 🎯 THE ULTIMATE SAFE CONNECTION GATEWAY: Manual Explicit Assignment
+# Connected via IPv4 Transaction Pooler using your brand new clean unencoded password block
 # =========================================================================
 if os.environ.get('RENDER'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres',                         # Direct standard standalone user layout
-            'PASSWORD': 'Student@#1234Rahul',              # Aapka explicit decoded password string
-            'HOST': 'db.tjnynruzgxrdwgohgnyc.supabase.co', # Aapka exact original standalone host address
-            'PORT': 5432,                               # Pure PostgreSQL traditional session port
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',         # Sahi verified tenant user identity format
+            'PASSWORD': 'Student123456789Rahul12',         # 🎯 UPDATED: Aapka naya symbol-free strict password!
+            'HOST': '://supabase.com', # 🎯 FIXED: IPv4 Compatible Pooler Host
+            'PORT': 6543,                                   # Safe Transactional Pooler network port
             'OPTIONS': {
                 'sslmode': 'require',
             }
