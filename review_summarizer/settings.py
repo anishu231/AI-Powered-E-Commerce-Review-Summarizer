@@ -222,17 +222,16 @@ if os.environ.get('RENDER'):
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc',         # Sahi verified pooler identity
-            'PASSWORD': 'Student123456789Rahul12',         # Aapka clean symbol-free strict password
-            'HOST': '://supabase.com', # 100% Stable IPv4 Pooler Host link
-            'PORT': 6543,                                   # Transactional Pooler network port configuration
+            'USER': 'postgres.tjnynruzgxrdwgohgnyc',
+            'PASSWORD': 'Student123456789Rahul12',
+            'HOST': 'aws-0-ap-south-1.pooler.supabase.com',
+            'PORT': 6543,
             'OPTIONS': {
                 'sslmode': 'require',
             }
         }
     }
 else:
-    # Local machine binary SQLite workspace setup
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -269,7 +268,7 @@ CORS_ALLOWED_ORIGINS = [
 # 🎯 FIXED SMTP EMAIL MODULE SETTINGS
 # =========================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
-EMAIL_HOST = '://gmail.com'  # Completely cleaned the prefix typos
+EMAIL_HOST = 'smtp.gmail.com'  # Completely cleaned the prefix typos
 EMAIL_PORT = 587 
 EMAIL_USE_TLS = True 
 EMAIL_HOST_USER = 'singhrohit23130@gmail.com' 
