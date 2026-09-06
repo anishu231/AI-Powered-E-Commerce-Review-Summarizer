@@ -211,19 +211,27 @@ TEMPLATES = [
 ]
 
 # =========================================================================
-# 🎯 THE ULTIMATE STANDALONE IPV4 POOLER ENGINE (100% BYPASS RENDER CACHE)
-# Humne database parameters ko direct explicit properties dictionary me lock kar diya hai.
-# Isse settings backend memory ya .env file me bacha hua translate error 100% FIXED!
+# 🎯 THE ULTIMATE FOOLPROOF SUPABASE PARSER PIPELINE (AUTO ENGINE)
+# Yeh setting direct connection (IPv6 fallback) aur Pooler (IPv4 compatible) 
+# dono ko completely and dynamic auto-parse kar legi bina kisi manual error ke!
 # =========================================================================
 if os.environ.get('RENDER'):
+    import urllib.parse as urlparse
+    db_link_str = os.environ.get('DATABASE_URL', '')
+    url = urlparse.urlparse(db_link_str)
+    
+    db_name = url.path[1:]
+    if "?" in db_name:
+        db_name = db_name.split("?")[0]
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.tjnynruzgxrdwgohgnyc',         # Sahi pooler user identity
-            'PASSWORD': 'Student123456789Rahul12',         # Aapka naya badla hua symbols-free password
-            'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com', # IPv4 Stable Transaction Pooler Host link
-            'PORT': 6543,                                   # Transactional Pooler network port configuration
+            'NAME': db_name if db_name else 'postgres',
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port or 5432,
             'OPTIONS': {
                 'sslmode': 'require',
             }
