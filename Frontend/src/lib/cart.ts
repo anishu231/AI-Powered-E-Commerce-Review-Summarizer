@@ -47,13 +47,13 @@ export function addProductToCart(product: {
   imageUrl?: string;
   image?: string;
   image_url?: string;
-}) {
+}, quantity = 1) {
   const productId = product.id ?? product.slug ?? product.name;
   const items = getCartItems();
   const existingItem = items.find((item) => String(item.id) === String(productId));
 
   if (existingItem) {
-    existingItem.quantity += 1;
+    existingItem.quantity += Math.max(1, Math.floor(quantity));
   } else {
     items.push({
       id: productId,
@@ -61,7 +61,7 @@ export function addProductToCart(product: {
       name: product.name,
       price: Number(product.price) || 0,
       imageUrl: product.imageUrl || product.image || product.image_url || "",
-      quantity: 1,
+      quantity: Math.max(1, Math.floor(quantity)),
     });
   }
 

@@ -6,7 +6,7 @@ import { RatingStars } from "@/components/RatingStars";
 import { AISummary } from "@/components/AISummary"; 
 import { Button } from "@/components/ui/button"; 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
-import { ArrowLeft, Loader2, ShoppingCart, Send, Star, CheckCircle, XCircle } from "lucide-react"; // 💡 FIXED: CheckCircle aur XCircle custom dynamic toast ke liye import kar diye hain
+import { ArrowLeft, ArrowRight, Loader2, Minus, Plus, ShoppingCart, Send, Star, CheckCircle, XCircle } from "lucide-react"; // 💡 FIXED: CheckCircle aur XCircle custom dynamic toast ke liye import kar diye hain
 import { Helmet } from "react-helmet-async"; 
 import { useState, useEffect } from "react"; 
 import { ProductsProps } from "./Products"; 
@@ -18,6 +18,7 @@ export default function ProductDetail() {
   const navigate = useNavigate(); 
   const [product, setProduct] = useState<ProductsProps | null>(null); 
   const [loading, setLoading] = useState(true); 
+  const [orderQuantity, setOrderQuantity] = useState(1);
   
   // Form states code declarations 
   const [comment, setComment] = useState(""); 
@@ -143,12 +144,22 @@ export default function ProductDetail() {
       name: product.name,
       price: product.price,
       imageUrl: imagePath,
-    });
+    }, orderQuantity);
     setToastType("success");
     setToastTitle("Added to cart");
     setToastMessage(`${product.name} has been added to your cart.`);
     setShowToast(true);
     window.setTimeout(() => setShowToast(false), 2500);
+  };
+  const handleContinueToOrder = () => {
+    addProductToCart({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      imageUrl: imagePath,
+    }, orderQuantity);
+    navigate("/cart");
   };
 
   return (
@@ -208,7 +219,25 @@ export default function ProductDetail() {
               </div>
               <p className="text-2xl font-bold text-primary">${Number(product.price).toFixed(2)}</p>
               <p className="text-base leading-relaxed text-muted-foreground whitespace-pre-line">{product.description}</p>
-              <Button size="lg" onClick={handleAddToCart} className="w-full gap-2 md:w-auto"><ShoppingCart className="h-4 w-4" /> Add to Cart</Button>
+              <div className="max-w-md space-y-4 rounded-2xl border border-border bg-card p-5">
+                <h2 className="font-display text-lg font-semibold text-foreground">Order summary</h2>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-muted-foreground">Quantity</span>
+                  <div className="inline-flex items-center rounded-xl border border-border bg-background">
+                    <button type="button" aria-label="Decrease quantity" disabled={orderQuantity <= 1} onClick={() => setOrderQuantity((quantity) => Math.max(1, quantity - 1))} className="flex h-10 w-10 items-center justify-center rounded-l-xl text-muted-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"><Minus className="h-4 w-4" /></button>
+                    <span aria-live="polite" className="min-w-9 text-center text-sm font-semibold text-foreground">{orderQuantity}</span>
+                    <button type="button" aria-label="Increase quantity" onClick={() => setOrderQuantity((quantity) => quantity + 1)} className="flex h-10 w-10 items-center justify-center rounded-r-xl text-muted-foreground transition hover:bg-muted"><Plus className="h-4 w-4" /></button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
+                  <span className="text-muted-foreground">Item total</span>
+                  <span className="text-lg font-semibold text-foreground">${(Number(product.price) * orderQuantity).toFixed(2)}</span>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button size="lg" onClick={handleAddToCart} variant="outline" className="w-full gap-2"><ShoppingCart className="h-4 w-4" /> Add to Cart</Button>
+                  <Button size="lg" onClick={handleContinueToOrder} className="w-full gap-2">Continue to order <ArrowRight className="h-4 w-4" /></Button>
+                </div>
+              </div>
             </div>
           </div>
           {/* CONTINUATION: DYNAMIC GRAPH ANALYSIS CARDS GRID */}
