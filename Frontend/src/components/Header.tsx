@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom"; 
 import { ShoppingBag, Search, ShoppingCart, User, LogOut, LogIn, UserPlus, CheckCircle, XCircle } from "lucide-react"; 
 import { logoutUser } from "@/lib/api"; 
+import { getCartItems } from "@/lib/cart";
 
 export function Header() { 
   const navigate = useNavigate(); 
@@ -23,18 +24,8 @@ export function Header() {
   const isLoggedIn = !!localStorage.getItem("access"); 
 
   function syncGlobalCartCounter() {
-    try {
-      const globalCartRaw = localStorage.getItem("global_marketplace_cart");
-      if (globalCartRaw) {
-        const cartItems = JSON.parse(globalCartRaw);
-        const totalItemsQty = cartItems.reduce((acc: number, item: any) => acc + (Number(item.quantity) || 0), 0);
-        setCartCount(totalItemsQty);
-      } else {
-        setCartCount(0);
-      }
-    } catch (err) {
-      setCartCount(0);
-    }
+    const totalItemsQty = getCartItems().reduce((total, item) => total + item.quantity, 0);
+    setCartCount(totalItemsQty);
   }
 
   // URL badalne par input field ka text synced rakhne ke liye
@@ -46,6 +37,7 @@ export function Header() {
   useEffect(() => { 
     syncGlobalCartCounter(); 
     window.addEventListener("storage", syncGlobalCartCounter);
+    window.addEventListener("cartUpdated", syncGlobalCartCounter);
     window.addEventListener("focus", syncGlobalCartCounter);
 
     function handleClickOutside(event: MouseEvent) { 
@@ -58,6 +50,7 @@ export function Header() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside); 
       window.removeEventListener("storage", syncGlobalCartCounter);
+      window.removeEventListener("cartUpdated", syncGlobalCartCounter);
       window.removeEventListener("focus", syncGlobalCartCounter);
     };
   }, []); 
@@ -140,7 +133,7 @@ export function Header() {
           </form> 
 
           <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0"> 
-            <Link to="/" className="relative p-2.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition duration-150" aria-label="Shopping Cart" > 
+            <Link to="/cart" className="relative p-2.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition duration-150" aria-label={`Shopping cart${cartCount ? `, ${cartCount} items` : ""}`}>
               <ShoppingCart size={20} /> 
               {cartCount > 0 && ( 
                 <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground rounded-full text-[10px] font-bold flex items-center justify-center border border-background shadow-sm"> 

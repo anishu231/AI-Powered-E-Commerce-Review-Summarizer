@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 import { useState, useEffect } from "react"; 
 import { ProductsProps } from "./Products"; 
 import { productDetail, postProductReview } from "@/lib/api"; 
+import { addProductToCart } from "@/lib/cart";
 
 export default function ProductDetail() { 
   const { slug } = useParams<{ slug: string }>(); 
@@ -130,6 +131,20 @@ export default function ProductDetail() {
 
   const imagePath = product.imageUrl || product.image || product.image_url || ""; 
   const absoluteImageUrl = imagePath.startsWith('http') ? imagePath : `http://localhost:8000${imagePath}`;
+  const handleAddToCart = () => {
+    addProductToCart({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      imageUrl: imagePath,
+    });
+    setToastType("success");
+    setToastMessage(`${product.name} added to your cart.`);
+    setShowToast(true);
+    window.setTimeout(() => setShowToast(false), 2500);
+  };
+
   return (
     <>
       <Helmet><title>{product.name} - Curated</title></Helmet>
@@ -187,7 +202,7 @@ export default function ProductDetail() {
               </div>
               <p className="text-2xl font-bold text-primary">${Number(product.price).toFixed(2)}</p>
               <p className="text-base leading-relaxed text-muted-foreground whitespace-pre-line">{product.description}</p>
-              <Button size="lg" className="w-full gap-2 md:w-auto"><ShoppingCart className="h-4 w-4" /> Add to Cart</Button>
+              <Button size="lg" onClick={handleAddToCart} className="w-full gap-2 md:w-auto"><ShoppingCart className="h-4 w-4" /> Add to Cart</Button>
             </div>
           </div>
           {/* CONTINUATION: DYNAMIC GRAPH ANALYSIS CARDS GRID */}
