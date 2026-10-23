@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 25% 98%;
+    --foreground: 20 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 20% 12%;
+    --primary: 25 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 20% 94%;
+    --secondary-foreground: 20 20% 12%;
+    --muted: 30 15% 92%;
+    --muted-foreground: 20 10% 45%;
+    --accent: 160 60% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 25 95% 53%;
+    --radius: 0.75rem;
+    --rating: 45 100% 50%;
+    --rating-empty: 30 10% 85%;
+  }
+
+  .dark {
+    --background: 20 20% 8%;
+    --foreground: 30 20% 95%;
+    --card: 20 18% 12%;
+    --card-foreground: 30 20% 95%;
+    --popover: 20 18% 12%;
+    --popover-foreground: 30 20% 95%;
+    --primary: 25 95% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 15% 18%;
+    --secondary-foreground: 30 20% 95%;
+    --muted: 20 15% 20%;
+    --muted-foreground: 30 10% 60%;
+    --accent: 160 55% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 15% 22%;
+    --input: 20 15% 22%;
+    --ring: 25 95% 55%;
+    --rating: 45 100% 50%;
+    --rating-empty: 20 10% 30%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .hover-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+  }
+}
