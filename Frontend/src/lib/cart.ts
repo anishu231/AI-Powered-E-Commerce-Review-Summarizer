@@ -80,3 +80,7 @@ export function updateCartItemQuantity(id: CartItem["id"], quantity: number) {
 export function removeCartItem(id: CartItem["id"]) {
   saveCartItems(getCartItems().filter((item) => String(item.id) !== String(id)));
 }
+
+export function clearCart() {
+  saveCartItems([]);
+}

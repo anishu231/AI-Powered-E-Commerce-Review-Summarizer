@@ -159,7 +159,7 @@ export default function ProductDetail() {
       price: product.price,
       imageUrl: imagePath,
     }, orderQuantity);
-    navigate("/cart");
+    navigate("/order");
   };
 
   return (

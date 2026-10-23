@@ -24,7 +24,8 @@ apiClient.interceptors.request.use(
       url.includes("/auth/register/") || 
       url.includes("/auth/login/") || 
       url.includes("/auth/refresh/") || 
-      (url.includes("/products/") && method === "get"); 
+      (url.includes("/products/") && method === "get") ||
+      (url.includes("/orders/") && method === "post");
       
     // Token sirf tabhi bhejein jab wo public route NAHI hai (Jaise profile, upload-product, post-review) 
     if (!isPublicRoute) { 
@@ -157,4 +158,18 @@ export function formatDate(isoDate: string): string {
     hour: "2-digit", 
     minute: "2-digit", 
   }); 
+}
+
+export async function createOrder(data: {
+  full_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postal_code: string;
+  payment_method: "cod";
+  items: { product_id: number; quantity: number }[];
+}) {
+  const response = await apiClient.post("/orders/", data);
+  return response.data;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Minus, PackageCheck, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Minus, PackageCheck, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { CartItem, getCartItems, removeCartItem, updateCartItemQuantity } from "@/lib/cart";
@@ -48,7 +48,8 @@ export default function Cart() {
               </Link>
             </div>
           ) : (
-              <section className="mx-auto max-w-5xl space-y-4" aria-label="Cart items">
+            <div className="mx-auto max-w-5xl">
+              <section className="space-y-4" aria-label="Cart items">
                 {items.map((item) => (
                   <article key={String(item.id)} className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:p-5">
                     <Link to={`/products/${item.slug}`} className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted/40 p-2 sm:h-28 sm:w-32">
@@ -82,6 +83,13 @@ export default function Cart() {
                   </article>
                 ))}
               </section>
+              <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">Ready? Fill in your delivery details to place the order.</p>
+                <Link to="/order" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
+                  Continue to order <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
           )}
         </main>
       </div>

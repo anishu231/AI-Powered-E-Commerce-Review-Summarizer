@@ -1,5 +1,10 @@
 from django.db import models 
 from django.contrib.auth.models import User 
+import uuid
+
+
+def generate_order_number():
+    return f"RP-{uuid.uuid4().hex[:10].upper()}"
 
 # 1. PRODUCT MODEL (FIXED FOR CLOUDINARY URLS)
 class Product(models.Model): 
@@ -31,3 +36,28 @@ class Review(models.Model):
 
     def __str__(self): 
         return f"{self.author} - {self.rating}/5"
+
+
+class Order(models.Model):
+    PAYMENT_CASH_ON_DELIVERY = "cod"
+    PAYMENT_CHOICES = [(PAYMENT_CASH_ON_DELIVERY, "Cash on delivery")]
+
+    STATUS_PENDING = "pending"
+    STATUS_CHOICES = [(STATUS_PENDING, "Pending")]
+
+    order_number = models.CharField(max_length=20, unique=True, default=generate_order_number)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="orders")
+    full_name = models.CharField(max_length=120)
+    email = models.EmailField()
+    phone = models.CharField(max_length=24)
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    payment_method = models.CharField(max_length=12, choices=PAYMENT_CHOICES, default=PAYMENT_CASH_ON_DELIVERY)
+    items = models.JSONField(default=list)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.order_number
