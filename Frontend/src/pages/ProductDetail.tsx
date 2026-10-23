@@ -27,6 +27,7 @@ export default function ProductDetail() {
 
   // 💡 INBUILT LOGIC: Custom advanced state notifications controller triggers
   const [showToast, setShowToast] = useState(false);
+  const [toastTitle, setToastTitle] = useState("Notice");
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
 
@@ -54,6 +55,7 @@ export default function ProductDetail() {
     if (!isLoggedIn) { 
       // 💡 FIXED: Purana default browser alert saaf kiya aur standard custom Red Error Toast lagaya
       setToastType("error");
+      setToastTitle("Sign-in required");
       setToastMessage("Please login first to write feedback! 🔒");
       setShowToast(true);
       setTimeout(() => {
@@ -65,6 +67,7 @@ export default function ProductDetail() {
     if (rating === 0) { 
       // 💡 FIXED: Purana standard browser alert clear kiya
       setToastType("error");
+      setToastTitle("Choose a rating");
       setToastMessage("Please select rating stars first! ⭐️");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -77,6 +80,7 @@ export default function ProductDetail() {
       
       // 💡 FIXED: "localhost:8080 says" ko block karke solid dynamic profile alert active kiya
       setToastType("success");
+      setToastTitle("Review submitted");
       setToastMessage("Thank you! Review saved live successfully. 🎉");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3500);
@@ -87,6 +91,7 @@ export default function ProductDetail() {
     } catch (err: any) { 
       // 💡 FIXED: Error hone par user context block mein custom clear instruction text print hoga
       setToastType("error");
+      setToastTitle("Review could not be submitted");
       if (err.response?.status === 401 || err.message?.includes("401")) {
         setToastMessage("❌ Authentication error. Please log in again.");
       } else {
@@ -140,7 +145,8 @@ export default function ProductDetail() {
       imageUrl: imagePath,
     });
     setToastType("success");
-    setToastMessage(`${product.name} added to your cart.`);
+    setToastTitle("Added to cart");
+    setToastMessage(`${product.name} has been added to your cart.`);
     setShowToast(true);
     window.setTimeout(() => setShowToast(false), 2500);
   };
@@ -173,7 +179,7 @@ export default function ProductDetail() {
             <h4 className={`text-xs font-bold uppercase tracking-wider ${
               toastType === "success" ? "text-orange-600" : "text-red-600"
             }`}>
-              {toastType === "success" ? "System Alert" : "System Error"}
+              {toastTitle}
             </h4>
             <p className="text-xs font-semibold text-muted-foreground mt-0.5 leading-snug">
               {toastMessage}
