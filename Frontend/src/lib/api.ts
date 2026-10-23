@@ -24,8 +24,7 @@ apiClient.interceptors.request.use(
       url.includes("/auth/register/") || 
       url.includes("/auth/login/") || 
       url.includes("/auth/refresh/") || 
-      (url.includes("/products/") && method === "get") ||
-      (url.includes("/orders/") && method === "post");
+      (url.includes("/products/") && method === "get");
       
     // Token sirf tabhi bhejein jab wo public route NAHI hai (Jaise profile, upload-product, post-review) 
     if (!isPublicRoute) { 
@@ -171,5 +170,10 @@ export async function createOrder(data: {
   items: { product_id: number; quantity: number }[];
 }) {
   const response = await apiClient.post("/orders/", data);
+  return response.data;
+}
+
+export async function getMyOrders() {
+  const response = await apiClient.get("/orders/mine/");
   return response.data;
 }

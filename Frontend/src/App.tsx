@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import UploadProduct from "./pages/UploadProduct"; // Import UploadProduct component
 import Cart from "./pages/Cart";
 import Order from "./pages/Order";
+import MyOrders from "./pages/MyOrders";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/products/:slug" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/order" element={<Order />} />
+            <Route path="/profile/orders" element={<MyOrders />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />

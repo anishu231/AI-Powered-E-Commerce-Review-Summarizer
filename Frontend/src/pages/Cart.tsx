@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Minus, PackageCheck, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Check, Minus, PackageCheck, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { CartItem, getCartItems, removeCartItem, updateCartItemQuantity } from "@/lib/cart";
 
 export default function Cart() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartItem[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const syncCart = () => setItems(getCartItems());
+    const syncCart = () => {
+      const nextItems = getCartItems();
+      setItems(nextItems);
+      setSelectedIds((current) => {
+        if (current.length === 0) return current;
+        const validIds = nextItems.map((item) => String(item.id));
+        const nextSelected = current.filter((id) => validIds.includes(id));
+        return nextSelected.length === validIds.length ? [] : nextSelected;
+      });
+    };
     syncCart();
     window.addEventListener("cartUpdated", syncCart);
     window.addEventListener("storage", syncCart);
@@ -20,6 +31,16 @@ export default function Cart() {
   }, []);
 
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const checkoutItems = selectedIds.length === 0 ? items : items.filter((item) => selectedIds.includes(String(item.id)));
+
+  const toggleItem = (id: CartItem["id"]) => {
+    const key = String(id);
+    setSelectedIds((current) => {
+      const selected = current.length === 0 ? items.map((item) => String(item.id)) : current;
+      const next = selected.includes(key) ? selected.filter((itemId) => itemId !== key) : [...selected, key];
+      return next.length === items.length ? [] : next;
+    });
+  };
 
   return (
     <>
@@ -52,6 +73,9 @@ export default function Cart() {
               <section className="space-y-4" aria-label="Cart items">
                 {items.map((item) => (
                   <article key={String(item.id)} className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:p-5">
+                    <button type="button" aria-label={`${selectedIds.length === 0 || selectedIds.includes(String(item.id)) ? "Remove" : "Select"} ${item.name} for order`} aria-pressed={selectedIds.length === 0 || selectedIds.includes(String(item.id))} onClick={() => toggleItem(item.id)} className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition ${selectedIds.length === 0 || selectedIds.includes(String(item.id)) ? "border-primary bg-primary text-primary-foreground" : "border-input bg-background text-transparent"}`}>
+                      <Check className="h-4 w-4" />
+                    </button>
                     <Link to={`/products/${item.slug}`} className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted/40 p-2 sm:h-28 sm:w-32">
                       {item.imageUrl ? (
                         <img src={item.imageUrl} alt={item.name} onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }} className="h-full w-full object-contain" />
@@ -84,10 +108,10 @@ export default function Cart() {
                 ))}
               </section>
               <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-muted-foreground">Ready? Fill in your delivery details to place the order.</p>
-                <Link to="/order" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
+                <p className="text-sm text-muted-foreground">{checkoutItems.length === items.length ? "All cart products are selected." : `${checkoutItems.length} selected product${checkoutItems.length === 1 ? "" : "s"} will be ordered.`} Fill in delivery details next.</p>
+                <button type="button" onClick={() => navigate("/order", { state: { checkoutItems } })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
                   Continue to order <ArrowRight className="h-4 w-4" />
-                </Link>
+                </button>
               </div>
             </div>
           )}

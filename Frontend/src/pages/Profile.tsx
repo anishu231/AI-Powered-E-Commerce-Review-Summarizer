@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { User, Mail, ShoppingBag, Settings, MapPin, KeyRound, ArrowRight, ArrowLeft } from "lucide-react";
+import { User, Mail, ShoppingBag, Settings, MapPin, KeyRound, ArrowRight, ArrowLeft, ClipboardList } from "lucide-react";
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -102,6 +102,22 @@ export default function Profile() {
                         </h3>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                            <Link
+                                to="/profile/orders"
+                                className="group bg-background border border-border hover:border-primary/50 rounded-2xl p-5 shadow-sm transition duration-200 cursor-pointer flex items-start gap-4"
+                            >
+                                <div className="p-3 bg-primary/10 text-primary rounded-xl group-hover:scale-110 transition duration-200">
+                                    <ClipboardList size={20} />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                    <h4 className="font-semibold text-sm text-foreground flex items-center justify-between">
+                                        My Orders
+                                        <ArrowRight size={14} className="text-muted-foreground group-hover:text-primary transition" />
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground">View order status and delivery details</p>
+                                </div>
+                            </Link>
 
                             {/* Card 1: Upload Our Products */}
                             <Link

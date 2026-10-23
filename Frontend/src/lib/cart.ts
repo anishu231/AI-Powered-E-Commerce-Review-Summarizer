@@ -84,3 +84,11 @@ export function removeCartItem(id: CartItem["id"]) {
 export function clearCart() {
   saveCartItems([]);
 }
+
+export function removeOrderedItems(orderedItems: Pick<CartItem, "id" | "quantity">[]) {
+  const orderedQuantities = new Map(orderedItems.map((item) => [String(item.id), item.quantity]));
+  const remainingItems = getCartItems()
+    .map((item) => ({ ...item, quantity: item.quantity - (orderedQuantities.get(String(item.id)) || 0) }))
+    .filter((item) => item.quantity > 0);
+  saveCartItems(remainingItems);
+}

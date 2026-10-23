@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Order, Product
@@ -83,3 +83,26 @@ def create_order(request):
         },
         status=status.HTTP_201_CREATED,
     )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+    return Response([
+        {
+            "order_number": order.order_number,
+            "full_name": order.full_name,
+            "email": order.email,
+            "phone": order.phone,
+            "address": order.address,
+            "city": order.city,
+            "postal_code": order.postal_code,
+            "payment_method": order.payment_method,
+            "items": order.items,
+            "total_amount": str(order.total_amount),
+            "status": order.status,
+            "created_at": order.created_at,
+        }
+        for order in orders
+    ])

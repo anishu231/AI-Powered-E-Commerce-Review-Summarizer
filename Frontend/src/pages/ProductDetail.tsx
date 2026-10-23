@@ -159,7 +159,18 @@ export default function ProductDetail() {
       price: product.price,
       imageUrl: imagePath,
     }, orderQuantity);
-    navigate("/order");
+    navigate("/order", {
+      state: {
+        checkoutItems: [{
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          price: Number(product.price) || 0,
+          imageUrl: imagePath,
+          quantity: orderQuantity,
+        }],
+      },
+    });
   };
 
   return (

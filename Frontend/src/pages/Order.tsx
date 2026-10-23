@@ -1,10 +1,10 @@
-import { FormEvent, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, MapPin, PackageCheck, Phone, ShieldCheck } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { createOrder } from "@/lib/api";
-import { CartItem, clearCart, getCartItems } from "@/lib/cart";
+import { CartItem, getCartItems, removeOrderedItems } from "@/lib/cart";
 
 type OrderForm = {
   full_name: string;
@@ -25,6 +25,8 @@ const initialForm: OrderForm = {
 };
 
 export default function Order() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartItem[]>([]);
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -32,13 +34,14 @@ export default function Order() {
   const [confirmation, setConfirmation] = useState<{ orderNumber: string; total: string } | null>(null);
 
   useEffect(() => {
-    setItems(getCartItems());
-  }, []);
+    const checkoutItems = location.state?.checkoutItems;
+    setItems(Array.isArray(checkoutItems) && checkoutItems.length > 0 ? checkoutItems : getCartItems());
+  }, [location.state]);
 
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
   const estimatedTotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
@@ -61,9 +64,10 @@ export default function Order() {
         payment_method: "cod",
         items: items.map((item) => ({ product_id: Number(item.id), quantity: item.quantity })),
       });
-      clearCart();
+      removeOrderedItems(items);
       setItems([]);
       setConfirmation({ orderNumber: result.order_number, total: result.total_amount });
+      navigate(location.pathname, { replace: true, state: null });
     } catch (error: any) {
       const responseErrors = error.response?.data?.errors;
       const firstFieldError = responseErrors && Object.values(responseErrors).flat(Infinity)[0];
@@ -98,6 +102,7 @@ export default function Order() {
                 <div className="mt-3 flex justify-between gap-4 border-t border-border pt-3 text-sm"><span className="text-muted-foreground">Order total</span><span className="font-semibold text-foreground">${Number(confirmation.total).toFixed(2)}</span></div>
               </div>
               <Link to="/" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90">Back to shopping <ArrowRight className="h-4 w-4" /></Link>
+              {localStorage.getItem("access") && <Link to="/profile/orders" className="mt-3 inline-flex items-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-muted">View my orders</Link>}
             </section>
           ) : items.length === 0 ? (
             <section className="mx-auto flex max-w-xl flex-col items-center rounded-3xl border border-dashed border-border px-6 py-14 text-center">
