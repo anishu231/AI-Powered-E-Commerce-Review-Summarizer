@@ -3,6 +3,7 @@ import time
 import uuid  # Safe dynamic slug auto-generation ke liye
 from datetime import timedelta 
 from django.conf import settings 
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404 
 from django.utils import timezone 
 from django.core.files.base import ContentFile 
@@ -20,6 +21,10 @@ from PIL import Image
 import cloudinary.uploader  # Direct image storage upload stream helper
 from review_app.models import Product, Review 
 from review_app.serializers import ListProductSerializer, ProductDetailSerializer 
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 # Initialize Gemini Client 
 client = genai.Client(api_key=settings.GEMINI_API_KEY) 
@@ -170,11 +175,12 @@ def products_api_wrapper(request):
                 gallery_urls.append(secure_url)
             secure_cloud_url = gallery_urls[primary_image_index]
             # Safe unique slug formulation engine logic 
-            generated_slug = slugify(name) 
-            if not generated_slug: 
-                generated_slug = f"prod-{int(time.time())}" 
-            if Product.objects.filter(slug=generated_slug).exists(): 
-                generated_slug = f"{generated_slug}-{str(uuid.uuid4())[:4]}" 
+            base_slug = slugify(name) or f"prod-{int(time.time())}"
+            base_slug = base_slug[:50].rstrip("-") or "product"
+            generated_slug = base_slug
+            while Product.objects.filter(slug=generated_slug).exists():
+                suffix = uuid.uuid4().hex[:6]
+                generated_slug = f"{base_slug[:43].rstrip('-')}-{suffix}"
                 
             # 🎯 2. ABSOLUTE QUERY LAYER CORRECTION:
             # Table me 'imageUrl' naam ka column nahi bana tha jo pehle crash kar raha tha,

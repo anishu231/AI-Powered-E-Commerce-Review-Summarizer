@@ -6,6 +6,7 @@ from .views_user import profile, logout
 from .views_orders import create_order, my_orders
 
 urlpatterns = [
+    path('', views.health_check, name='health_check'),
     # Products API Wrap endpoint 
     path('products/', views.products_api_wrapper, name='products_api_wrapper'),
     path('orders/', create_order, name='create_order'),
