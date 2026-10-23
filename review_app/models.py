@@ -16,6 +16,7 @@ class Product(models.Model):
     # 🎯 FIXED LAYER: Changed to CharField with max_length=500 
     # Is badlav se bada Cloudinary cloud production link database me bina crash ke permanent secure save ho sakega!
     image = models.CharField(max_length=500, blank=True, null=True) 
+    gallery_images = models.JSONField(default=list, blank=True)
     
     review_summary = models.TextField(blank=True, null=True) 
     summary_updated_at = models.DateTimeField(blank=True, null=True) 

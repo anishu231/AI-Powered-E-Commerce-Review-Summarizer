@@ -18,10 +18,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 # 2. HOME PAGE CATALOG SERIALIZER (FIXED CLOUDINARY INTEGRATION)
 class ListProductSerializer(serializers.ModelSerializer):
     imageUrl = serializers.SerializerMethodField()
+    image_gallery = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'description', 'price', 'image', 'imageUrl', 'created_at', 'review_summary']
+        fields = ['id', 'name', 'slug', 'description', 'price', 'image', 'imageUrl', 'image_gallery', 'created_at', 'review_summary']
 
     def get_imageUrl(self, obj):
         if obj.image:
@@ -33,16 +34,26 @@ class ListProductSerializer(serializers.ModelSerializer):
             return obj.image.url
         return ""
 
+    def get_image_gallery(self, obj):
+        urls = list(obj.gallery_images or [])
+        if obj.image and obj.image not in urls:
+            urls.insert(0, obj.image)
+        return [
+            {"url": url, "is_primary": url == obj.image}
+            for url in urls
+        ]
+
 
 # 3. DETAIL PAGE COMPLETE GRAPH SERIALIZER (FIXED CLOUDINARY INTEGRATION)
 class ProductDetailSerializer(serializers.ModelSerializer):
     imageUrl = serializers.SerializerMethodField()
+    image_gallery = serializers.SerializerMethodField()
     reviews = ReviewSerializer(many=True, read_only=True) # Direct mapping for real-time reviews array
 
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'slug', 'description', 'price', 'image', 'imageUrl', 
+            'id', 'name', 'slug', 'description', 'price', 'image', 'imageUrl', 'image_gallery',
             'created_at', 'reviews', 'review_summary', 'summary_updated_at'
         ]
 
@@ -54,3 +65,12 @@ class ProductDetailSerializer(serializers.ModelSerializer):
                 return image_str
             return obj.image.url
         return ""
+
+    def get_image_gallery(self, obj):
+        urls = list(obj.gallery_images or [])
+        if obj.image and obj.image not in urls:
+            urls.insert(0, obj.image)
+        return [
+            {"url": url, "is_primary": url == obj.image}
+            for url in urls
+        ]

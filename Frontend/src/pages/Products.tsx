@@ -24,6 +24,7 @@ export interface ProductsProps {
   image?: string;
   imageUrl?: string;
   image_url?: string;
+  image_gallery?: { url: string; is_primary: boolean }[];
   reviews: Review[];
   summary_updated_at: string;
   review_summary: string;

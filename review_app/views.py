@@ -138,24 +138,37 @@ def products_api_wrapper(request):
             name = request.data.get('name') 
             description = request.data.get('description') 
             price = request.data.get('price') 
-            image_file = request.FILES.get('image') 
+            image_files = request.FILES.getlist('images') or request.FILES.getlist('image')
             
-            if not all([name, description, price, image_file]): 
-                return Response({"error": "All fields (name, description, price, image) are required."}, status=status.HTTP_400_BAD_REQUEST) 
-                
-            # 🎯 1. Secure Cloudinary Manual File Upload Stream
-            upload_result = cloudinary.uploader.upload( 
-                image_file, 
-                folder="reviewpulse_products", 
-                format="webp", 
-                transformation=[{"quality": "auto:good"}] 
-            ) 
-            
-            secure_cloud_url = upload_result.get("secure_url") 
-            
-            if not secure_cloud_url: 
-                raise Exception("Failed to retrieve secure URL from Cloudinary cloud bucket.") 
-            
+            if not all([name, description, price]) or not image_files:
+                return Response({"error": "Name, description, price and at least one image are required."}, status=status.HTTP_400_BAD_REQUEST)
+            if len(image_files) > 8:
+                return Response({"error": "You can upload up to 8 product images."}, status=status.HTTP_400_BAD_REQUEST)
+            if any(not (image_file.content_type or "").startswith("image/") for image_file in image_files):
+                return Response({"error": "Only image files are allowed."}, status=status.HTTP_400_BAD_REQUEST)
+            if any(image_file.size > 5 * 1024 * 1024 for image_file in image_files):
+                return Response({"error": "Each image must be 5 MB or smaller."}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                primary_image_index = int(request.data.get("primary_image_index", 0))
+            except (TypeError, ValueError):
+                return Response({"error": "Choose a valid cover image."}, status=status.HTTP_400_BAD_REQUEST)
+            if primary_image_index < 0 or primary_image_index >= len(image_files):
+                return Response({"error": "Choose a valid cover image."}, status=status.HTTP_400_BAD_REQUEST)
+
+            gallery_urls = []
+            for image_file in image_files:
+                upload_result = cloudinary.uploader.upload(
+                    image_file,
+                    folder="reviewpulse_products",
+                    format="webp",
+                    transformation=[{"quality": "auto:good"}],
+                )
+                secure_url = upload_result.get("secure_url")
+                if not secure_url:
+                    raise Exception("Failed to retrieve secure URL from Cloudinary cloud bucket.")
+                gallery_urls.append(secure_url)
+            secure_cloud_url = gallery_urls[primary_image_index]
             # Safe unique slug formulation engine logic 
             generated_slug = slugify(name) 
             if not generated_slug: 
@@ -170,8 +183,9 @@ def products_api_wrapper(request):
                 name=name, 
                 description=description, 
                 price=price, 
-                image=secure_cloud_url,  # Direct parameter string allocation
-                slug=generated_slug 
+                image=secure_cloud_url,
+                gallery_images=gallery_urls,
+                slug=generated_slug
             ) 
             
             return Response({ 
@@ -180,7 +194,11 @@ def products_api_wrapper(request):
                     "id": product.id, 
                     "name": product.name, 
                     "price": str(product.price), 
-                    "imageUrl": secure_cloud_url 
+                    "imageUrl": secure_cloud_url,
+                    "image_gallery": [
+                        {"url": url, "is_primary": index == primary_image_index}
+                        for index, url in enumerate(gallery_urls)
+                    ],
                 } 
             }, status=status.HTTP_201_CREATED) 
             

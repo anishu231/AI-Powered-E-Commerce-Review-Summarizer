@@ -1,6 +1,6 @@
 
 
-import React, { useState } from "react"; 
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; 
 import { ArrowLeft, PackagePlus, Upload, DollarSign, Type, FileText, CheckCircle, XCircle } from "lucide-react"; // 💡 FIXED: CheckCircle aur XCircle toast ke liye import kiye hain
 import { uploadProduct } from "@/lib/api"; 
@@ -13,7 +13,9 @@ export default function UploadProduct() {
     description: "", 
     price: "", 
   }); 
-  const [imageFile, setImageFile] = useState<File | null>(null); 
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [coverImageIndex, setCoverImageIndex] = useState(0);
+  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 
   // 💡 INBUILT LOGIC: Custom advanced state notifications controller triggers
   const [showToast, setShowToast] = useState(false);
@@ -24,15 +26,32 @@ export default function UploadProduct() {
     setForm({ ...form, [e.target.name]: e.target.value }); 
   }; 
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
-    if (e.target.files && e.target.files[0]) { 
-      setImageFile(e.target.files[0]); 
-    } 
-  }; 
+  useEffect(() => () => imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url)), [imagePreviewUrls]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > 8) {
+      setToastType("error");
+      setToastMessage("Choose up to 8 product images.");
+      setShowToast(true);
+      e.target.value = "";
+      return;
+    }
+    if (selectedFiles.some((file) => file.size > 5 * 1024 * 1024)) {
+      setToastType("error");
+      setToastMessage("Each image must be 5 MB or smaller.");
+      setShowToast(true);
+      e.target.value = "";
+      return;
+    }
+    setImageFiles(selectedFiles);
+    setCoverImageIndex(0);
+    setImagePreviewUrls(selectedFiles.map((file) => URL.createObjectURL(file)));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => { 
     e.preventDefault(); 
-    if (!imageFile) { 
+    if (imageFiles.length === 0) {
       // 💡 FIXED: Alert replaced with custom error toast
       setToastType("error");
       setToastMessage("Please upload a product image! 📁");
@@ -47,7 +66,8 @@ export default function UploadProduct() {
       formData.append("name", form.name); 
       formData.append("description", form.description); 
       formData.append("price", form.price); 
-      formData.append("image", imageFile); 
+      imageFiles.forEach((file) => formData.append("images", file));
+      formData.append("primary_image_index", String(coverImageIndex));
       
       await uploadProduct(formData); 
       
@@ -151,23 +171,34 @@ export default function UploadProduct() {
                 </div> 
               </div> 
 
-              {/* Image Upload Component */} 
+              {/* Product image gallery and cover selection */}
               <div className="space-y-1.5"> 
-                <label className="text-sm font-medium text-foreground flex items-center gap-1.5"> 
-                  <Upload size={14} className="text-muted-foreground" /> Upload Image 
+                <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                  <Upload size={14} className="text-muted-foreground" /> Product Images
                 </label> 
                 <div className="flex items-center justify-center w-full"> 
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-input bg-muted/10 hover:bg-muted/30 rounded-xl cursor-pointer transition group"> 
                     <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4"> 
                       <Upload size={24} className="text-muted-foreground group-hover:text-primary transition mb-2" /> 
                       <p className="text-xs font-medium text-foreground truncate max-w-xs"> 
-                        {imageFile ? imageFile.name : "Click to upload product image"} 
+                        {imageFiles.length ? `${imageFiles.length} image${imageFiles.length === 1 ? "" : "s"} selected` : "Choose product images"}
                       </p> 
-                      <p className="text-[10px] text-muted-foreground mt-0.5">PNG, JPG or WEBP up to 5MB</p> 
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Select up to 8 PNG, JPG or WEBP files · max 5 MB each</p>
                     </div> 
-                    <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} /> 
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
                   </label> 
                 </div> 
+                {imageFiles.length > 0 && <div className="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-3">
+                  {imageFiles.map((file, index) => (
+                    <label key={`${file.name}-${file.lastModified}-${index}`} className={`cursor-pointer overflow-hidden rounded-xl border bg-background transition ${coverImageIndex === index ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
+                      <img src={imagePreviewUrls[index]} alt={file.name} className="h-28 w-full bg-muted/20 object-contain p-2" />
+                      <span className="flex items-center gap-2 border-t border-border px-3 py-2 text-xs">
+                        <input type="radio" name="cover-image" checked={coverImageIndex === index} onChange={() => setCoverImageIndex(index)} className="accent-orange-500" />
+                        <span className="min-w-0"><span className="block truncate font-medium text-foreground">{file.name}</span><span className="text-muted-foreground">{coverImageIndex === index ? "Storefront cover" : "Use as cover"}</span></span>
+                      </span>
+                    </label>
+                  ))}
+                </div>}
               </div> 
 
               {/* Submit Button */} 

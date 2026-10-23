@@ -136,7 +136,8 @@ export default function ProductDetail() {
   }); 
 
   const imagePath = product.imageUrl || product.image || product.image_url || ""; 
-  const absoluteImageUrl = imagePath.startsWith('http') ? imagePath : `http://localhost:8000${imagePath}`;
+  const galleryImages = (product.image_gallery?.length ? product.image_gallery : imagePath ? [{ url: imagePath, is_primary: true }] : [])
+    .map((image) => ({ ...image, url: image.url.startsWith("http") ? image.url : `http://localhost:8000${image.url}` }));
   const handleAddToCart = () => {
     addProductToCart({
       id: product.id,
@@ -217,8 +218,12 @@ export default function ProductDetail() {
             <ArrowLeft className="h-4 w-4" /> Back to products
           </Link>
           <div className="grid gap-10 lg:grid-cols-2">
-            <div className="overflow-hidden rounded-xl bg-white aspect-[4/3] relative border border-border/40 flex items-center justify-center p-4">
-              <img src={absoluteImageUrl} alt={product.name} className="w-full h-full object-contain" />
+            <div className="space-y-4">
+              {galleryImages.map((image, index) => (
+                <figure key={`${image.url}-${index}`} className="flex min-h-[320px] aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-border/40 bg-white p-4">
+                  <img src={image.url} alt={`${product.name} view ${index + 1}`} onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }} className="h-full w-full object-contain" />
+                </figure>
+              ))}
             </div>
             <div className="space-y-6">
               <div>
