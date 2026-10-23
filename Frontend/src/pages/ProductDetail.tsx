@@ -6,9 +6,9 @@ import { RatingStars } from "@/components/RatingStars";
 import { AISummary } from "@/components/AISummary"; 
 import { Button } from "@/components/ui/button"; 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
-import { ArrowLeft, ArrowRight, Loader2, Minus, Plus, ShoppingCart, Send, Star, CheckCircle, XCircle } from "lucide-react"; // 💡 FIXED: CheckCircle aur XCircle custom dynamic toast ke liye import kar diye hain
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Loader2, Minus, Plus, ShoppingCart, Send, Star, CheckCircle, XCircle } from "lucide-react"; // 💡 FIXED: CheckCircle aur XCircle custom dynamic toast ke liye import kar diye hain
 import { Helmet } from "react-helmet-async"; 
-import { useState, useEffect } from "react"; 
+import { useState, useEffect, useRef } from "react";
 import { ProductsProps } from "./Products"; 
 import { productDetail, postProductReview } from "@/lib/api"; 
 import { addProductToCart } from "@/lib/cart";
@@ -19,6 +19,8 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<ProductsProps | null>(null); 
   const [loading, setLoading] = useState(true); 
   const [orderQuantity, setOrderQuantity] = useState(1);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
   
   // Form states code declarations 
   const [comment, setComment] = useState(""); 
@@ -47,7 +49,8 @@ export default function ProductDetail() {
     } 
   } 
 
-  useEffect(() => { 
+  useEffect(() => {
+    setActiveImageIndex(0);
     fetchProductDetail(); 
   }, [slug]); 
 
@@ -136,8 +139,16 @@ export default function ProductDetail() {
   }); 
 
   const imagePath = product.imageUrl || product.image || product.image_url || ""; 
-  const galleryImages = (product.image_gallery?.length ? product.image_gallery : imagePath ? [{ url: imagePath, is_primary: true }] : [])
+  const rawGalleryImages = product.image_gallery?.length ? product.image_gallery : imagePath ? [{ url: imagePath, is_primary: true }] : [];
+  const primaryGalleryImage = rawGalleryImages.find((image) => image.is_primary);
+  const orderedGalleryImages = primaryGalleryImage
+    ? [primaryGalleryImage, ...rawGalleryImages.filter((image) => image !== primaryGalleryImage)]
+    : rawGalleryImages;
+  const galleryImages = orderedGalleryImages
     .map((image) => ({ ...image, url: image.url.startsWith("http") ? image.url : `http://localhost:8000${image.url}` }));
+  const activeImage = galleryImages[activeImageIndex] || galleryImages[0];
+  const showPreviousImage = () => setActiveImageIndex((index) => galleryImages.length > 1 ? (index - 1 + galleryImages.length) % galleryImages.length : 0);
+  const showNextImage = () => setActiveImageIndex((index) => galleryImages.length > 1 ? (index + 1) % galleryImages.length : 0);
   const handleAddToCart = () => {
     addProductToCart({
       id: product.id,
@@ -218,13 +229,44 @@ export default function ProductDetail() {
             <ArrowLeft className="h-4 w-4" /> Back to products
           </Link>
           <div className="grid gap-10 lg:grid-cols-2">
-            <div className="space-y-4">
-              {galleryImages.map((image, index) => (
-                <figure key={`${image.url}-${index}`} className="flex min-h-[320px] aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-border/40 bg-white p-4">
-                  <img src={image.url} alt={`${product.name} view ${index + 1}`} onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }} className="h-full w-full object-contain" />
-                </figure>
-              ))}
-            </div>
+            <section aria-label="Product image gallery" className="min-w-0">
+              <div
+                role="group"
+                aria-label="Swipe to browse product images"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "ArrowLeft") showPreviousImage();
+                  if (event.key === "ArrowRight") showNextImage();
+                }}
+                onTouchStart={(event) => { touchStartX.current = event.changedTouches[0]?.clientX ?? null; }}
+                onTouchEnd={(event) => {
+                  const endX = event.changedTouches[0]?.clientX;
+                  if (touchStartX.current === null || endX === undefined || galleryImages.length < 2) return;
+                  const deltaX = endX - touchStartX.current;
+                  if (Math.abs(deltaX) > 40) deltaX > 0 ? showPreviousImage() : showNextImage();
+                  touchStartX.current = null;
+                }}
+                className="relative flex aspect-[4/3] min-h-[320px] touch-pan-y items-center justify-center overflow-hidden rounded-2xl border border-border/40 bg-white p-4 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                {activeImage ? (
+                  <img src={activeImage.url} alt={`${product.name} image ${activeImageIndex + 1}`} onError={(event) => { event.currentTarget.src = "/placeholder.svg"; }} className="h-full w-full select-none object-contain" draggable={false} />
+                ) : (
+                  <div className="text-sm text-muted-foreground">No product images available</div>
+                )}
+                {galleryImages.length > 1 && <>
+                  <button type="button" aria-label="Show previous product image" onClick={showPreviousImage} className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/90 text-foreground shadow-sm transition hover:bg-white"><ChevronLeft className="h-5 w-5" /></button>
+                  <button type="button" aria-label="Show next product image" onClick={showNextImage} className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/90 text-foreground shadow-sm transition hover:bg-white"><ChevronRight className="h-5 w-5" /></button>
+                  <span aria-live="polite" className="absolute bottom-3 right-3 rounded-full bg-black/65 px-3 py-1 text-xs font-medium text-white">{activeImageIndex + 1} / {galleryImages.length}</span>
+                </>}
+              </div>
+              {galleryImages.length > 1 && <div className="mt-3 flex snap-x gap-3 overflow-x-auto pb-2" aria-label="Choose product image">
+                {galleryImages.map((image, index) => (
+                  <button key={`${image.url}-${index}`} type="button" aria-label={`Show product image ${index + 1}`} aria-current={activeImageIndex === index} onClick={() => setActiveImageIndex(index)} className={`h-20 w-20 shrink-0 snap-start overflow-hidden rounded-xl border bg-white p-1.5 transition ${activeImageIndex === index ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"}`}>
+                    <img src={image.url} alt="" className="h-full w-full object-contain" />
+                  </button>
+                ))}
+              </div>}
+            </section>
             <div className="space-y-6">
               <div>
                 <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">{product.name}</h1>
