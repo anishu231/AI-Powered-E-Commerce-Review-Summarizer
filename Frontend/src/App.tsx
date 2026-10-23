@@ -14,6 +14,7 @@ import UploadProduct from "./pages/UploadProduct"; // Import UploadProduct compo
 import Cart from "./pages/Cart";
 import Order from "./pages/Order";
 import MyOrders from "./pages/MyOrders";
+import AssistantWidget from "./components/AssistantWidget";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/profile/upload-product" element={<UploadProduct />} /> {/* UploadProduct route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <AssistantWidget />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

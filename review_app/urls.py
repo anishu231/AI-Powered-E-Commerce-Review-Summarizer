@@ -4,6 +4,7 @@ from review_app import views
 from .views_auth import register, login
 from .views_user import profile, logout
 from .views_orders import create_order, my_orders
+from .views_assistant import assistant_chat
 
 urlpatterns = [
     path('', views.health_check, name='health_check'),
@@ -11,6 +12,7 @@ urlpatterns = [
     path('products/', views.products_api_wrapper, name='products_api_wrapper'),
     path('orders/', create_order, name='create_order'),
     path('orders/mine/', my_orders, name='my_orders'),
+    path('assistant/chat/', assistant_chat, name='assistant_chat'),
     path('products/<slug:slug>/', views.product_detail, name='product_detail'),
     path('products/<slug:slug>/generate-summary/', views.generate_reviews_summary, name='generate_reviews_summary'),
     path('products/<slug:slug>/review/', views.add_review, name='add_review'),

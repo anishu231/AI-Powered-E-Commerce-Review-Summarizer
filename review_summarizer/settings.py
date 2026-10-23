@@ -282,6 +282,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ( 
         "rest_framework.permissions.AllowAny", 
     ), 
+    "DEFAULT_THROTTLE_RATES": {
+        "website_assistant": "20/hour",
+    },
 } 
 
 MEDIA_URL = '/media/' 

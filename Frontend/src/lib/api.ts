@@ -177,3 +177,8 @@ export async function getMyOrders() {
   const response = await apiClient.get("/orders/mine/");
   return response.data;
 }
+
+export async function assistantChat(question: string, history: { role: "user" | "assistant"; content: string }[]) {
+  const response = await apiClient.post("/assistant/chat/", { question, history });
+  return response.data;
+}
